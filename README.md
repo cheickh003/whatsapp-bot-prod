@@ -1,172 +1,157 @@
-# Bot WhatsApp Jarvis
+# WhatsApp Bot Jarvis 🤖
 
-Bot WhatsApp intelligent utilisant Claude 3.5 Sonnet et Appwrite Cloud pour la persistance des données.
+Bot WhatsApp intelligent utilisant Claude AI pour Nourx - Société ivoirienne de services numériques et d'intelligence artificielle.
 
-## 🚀 Fonctionnalités
+## 🌟 Fonctionnalités
 
-- 💬 Conversations naturelles avec Claude 3.5 Sonnet
-- 📚 Mémoire contextuelle des conversations
-- 📄 Analyse de documents (PDF, images, etc.)
-- 📊 Génération de rapports et documents
-- 🔐 Système d'administration sécurisé
-- 📝 Gestion de projets et tâches
-- ⏰ Système de rappels
-- 🎫 Support technique avec tickets
+### 💬 Conversations Intelligentes
+- Intégration avec Claude 3.5 Sonnet
+- Mémoire contextuelle des conversations
+- Support multilingue (Français/Anglais)
+- Réponses personnalisées selon l'heure et le contexte
 
-## 📁 Structure du projet
+### 📊 Administration Avancée
+- Système d'authentification sécurisé par PIN
+- Dashboard avec statistiques en temps réel
+- Rapports quotidiens automatiques (18h00 GMT)
+- Gestion des utilisateurs et permissions
+- Audit complet des actions
 
-```
-bot-whatsapp/
-├── src/                   # Code source du bot
-│   ├── handlers/         # Gestionnaires de messages
-│   ├── services/         # Services (AI, Appwrite, etc.)
-│   ├── models/           # Modèles de données
-│   ├── utils/            # Utilitaires
-│   └── config/           # Configuration
-├── dist/                  # Code compilé
-├── scripts/              # Scripts utilitaires
-│   ├── maintenance/      # Scripts de gestion du bot
-│   ├── utilities/        # Scripts utilitaires
-│   └── debug/            # Scripts de débogage
-├── logs/                 # Fichiers de logs
-├── config/               # Fichiers de configuration
-├── docs/                 # Documentation
-├── exports/              # Exports de données
-└── backups/              # Sauvegardes
+### 🎯 Gestion de Projets
+- Création et suivi de projets
+- Jalons et tâches
+- Suivi de progression
+- Rappels automatiques
 
-```
+### 🎫 Système de Tickets
+- Support technique intégré
+- Priorités et escalade automatique
+- Historique des conversations
+- Résolution collaborative
 
-## 🛠️ Installation
+### 📄 Analyse de Documents
+- Support PDF, images, Word, Excel
+- Extraction de texte intelligent
+- Résumés automatiques
+- Q&A sur documents
 
-1. **Prérequis**
-   - Node.js 18+
-   - npm ou yarn
-   - Compte Appwrite Cloud
-   - Clé API Claude (Anthropic)
+### ⏰ Rappels et Notifications
+- Rappels ponctuels et récurrents
+- Notifications programmées
+- Messages admin planifiés
+- Fuseau horaire Abidjan (GMT+0)
 
-2. **Installation**
-   ```bash
-   npm install
-   ```
+## 🚀 Installation
 
-3. **Configuration**
-   - Copier `config/.env.example` vers `config/.env`
-   - Configurer les variables d'environnement
+### Prérequis
+- Node.js 18+
+- npm ou yarn
+- Compte Appwrite Cloud
+- Clé API Claude (Anthropic)
+- Numéro WhatsApp Business
 
-## ⚙️ Configuration
+### Configuration
 
-Variables d'environnement requises dans `config/.env`:
-
-```env
-# Appwrite
-APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
-APPWRITE_PROJECT_ID=your_project_id
-APPWRITE_API_KEY=your_api_key
-DATABASE_ID=whatsapp_chatbot_db
-
-# Claude AI
-CLAUDE_API_KEY=your_claude_api_key
-
-# Admin
-ADMIN_NUMBER=your_phone_number
-```
-
-## 🚀 Démarrage
-
-### Utiliser le gestionnaire de bot (recommandé)
-
+1. **Cloner le repository**
 ```bash
-# Démarrer le bot
-./scripts/maintenance/bot-manager.sh start
-
-# Arrêter le bot
-./scripts/maintenance/bot-manager.sh stop
-
-# Redémarrer le bot
-./scripts/maintenance/bot-manager.sh restart
-
-# Voir le statut
-./scripts/maintenance/bot-manager.sh status
-
-# Voir les logs en temps réel
-./scripts/maintenance/bot-manager.sh logs
+git clone https://github.com/cheickh003/whatsapp-bot-prod.git
+cd whatsapp-bot-prod
+npm install
 ```
 
-### Démarrage manuel
-
+2. **Configuration des variables d'environnement**
 ```bash
-# Compilation
+cp config/.env.example config/.env
+# Éditer config/.env avec vos clés API
+```
+
+3. **Compilation**
+```bash
 npm run build
-
-# Démarrage
-npm start
 ```
 
-## 📱 Utilisation
+## 🎮 Utilisation
+
+### Démarrage du bot
+```bash
+./scripts/bot start    # Démarrer le bot
+./scripts/bot status   # Vérifier le statut
+./scripts/bot logs     # Voir les logs
+./scripts/bot stop     # Arrêter le bot
+```
 
 ### Commandes principales
-
 - `/help` - Afficher l'aide
-- `/project` - Gérer les projets
-- `/reminder` - Créer des rappels
-- `/clear` - Effacer l'historique
-- `/export` - Exporter la conversation
+- `/ticket [description]` - Créer un ticket
+- `/project [nom]` - Créer un projet
+- `/remind [temps] [message]` - Créer un rappel
+- `/doc` - Gérer les documents
 
-### Administration
+### Commandes admin
+- `/admin auth [PIN]` - S'authentifier
+- `/admin help` - Voir toutes les commandes admin
+- `/admin report` - Générer un rapport instantané
+- `/admin stats` - Voir les statistiques
 
-Les administrateurs peuvent utiliser des commandes supplémentaires :
-- Gestion des utilisateurs
-- Configuration du bot
-- Accès aux statistiques
+## 🏗️ Architecture
 
-## 🔧 Scripts utilitaires
+```
+├── src/               # Code source TypeScript
+│   ├── config/       # Configuration
+│   ├── handlers/     # Gestionnaires de messages
+│   ├── services/     # Services métier
+│   ├── models/       # Modèles de données
+│   └── utils/        # Utilitaires
+├── scripts/          # Scripts de gestion
+├── docs/             # Documentation
+└── config/           # Fichiers de configuration
+```
 
-### Maintenance
-- `bot-manager.sh` - Gestionnaire principal du bot
-- `start.sh` - Démarrer le bot
-- `stop.sh` - Arrêter le bot
-- `status.sh` - Vérifier le statut
+## 🔧 Technologies
 
-### Debug
-- `monitor-logs.sh` - Surveiller les logs
-- `debug-logs.sh` - Analyser les erreurs
+- **Backend**: Node.js, TypeScript
+- **AI**: Claude 3.5 Sonnet (Anthropic)
+- **Database**: Appwrite Cloud
+- **WhatsApp**: whatsapp-web.js
+- **Logging**: Winston
+- **Date/Time**: date-fns avec support GMT+0
 
-### Utilitaires
-- `clean-db.sh` - Nettoyer la base de données
-- `check-all-conversations.js` - Vérifier les conversations
+## 📈 Monitoring
 
-## 📊 Monitoring
-
-Les logs sont stockés dans le dossier `logs/`:
-- `bot.log` - Log principal
-- `error.log` - Erreurs uniquement
-- `combined.log` - Tous les logs
+Le bot génère automatiquement des rapports quotidiens incluant :
+- Nombre de messages traités
+- Utilisateurs actifs
+- Tickets résolus
+- Projets en cours
+- Performance du système
 
 ## 🔒 Sécurité
 
-- Authentification admin par numéro de téléphone
-- Sessions sécurisées avec expiration
+- Authentification par PIN hashé
+- Sessions avec expiration
 - Audit de toutes les actions admin
 - Chiffrement des données sensibles
+- Rate limiting
 
-## 🐛 Dépannage
+## 🤝 Contribution
 
-1. **Le bot ne démarre pas**
-   - Vérifier les logs: `./scripts/maintenance/bot-manager.sh logs`
-   - Vérifier la configuration dans `config/.env`
-
-2. **Erreurs de connexion WhatsApp**
-   - Supprimer `.wwebjs_auth` et rescanner le QR code
-   - Vérifier la connexion internet
-
-3. **Erreurs Appwrite**
-   - Vérifier les clés API
-   - Vérifier les permissions des collections
+Les contributions sont les bienvenues ! Veuillez :
+1. Fork le projet
+2. Créer une branche feature
+3. Commiter vos changements
+4. Pousser vers la branche
+5. Ouvrir une Pull Request
 
 ## 📝 Licence
 
-Ce projet est privé et propriétaire.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ## 👥 Support
 
-Pour toute question ou problème, consultez les logs ou contactez l'administrateur.
+Pour toute question ou problème :
+- Email: support@nourx.com
+- WhatsApp: +225 07 03 07 94 10
+
+---
+
+Développé avec ❤️ par [Nourx](https://nourx.com) - Abidjan, Côte d'Ivoire
