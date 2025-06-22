@@ -1,0 +1,3 @@
+#!/bin/bash
+# Quick launcher for bot management
+cd "$(dirname "$0")/.." && ./scripts/maintenance/bot-manager.sh "$@"
