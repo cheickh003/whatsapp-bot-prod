@@ -1,14 +1,15 @@
 # WhatsApp Bot Jarvis 🤖
 
-Bot WhatsApp intelligent utilisant Claude AI pour Nourx - Société ivoirienne de services numériques et d'intelligence artificielle.
+Bot WhatsApp intelligent utilisant ChatGPT (OpenAI) pour Nourx - Société ivoirienne de services numériques et d'intelligence artificielle.
 
 ## 🌟 Fonctionnalités
 
 ### 💬 Conversations Intelligentes
-- Intégration avec Claude 3.5 Sonnet
-- Mémoire contextuelle des conversations
+- Intégration avec GPT-4o-mini (OpenAI)
+- Mémoire contextuelle des conversations via LangChain
 - Support multilingue (Français/Anglais)
 - Réponses personnalisées selon l'heure et le contexte
+- Transcription vocale avec Whisper API
 
 ### 📊 Administration Avancée
 - Système d'authentification sécurisé par PIN
@@ -47,7 +48,7 @@ Bot WhatsApp intelligent utilisant Claude AI pour Nourx - Société ivoirienne d
 - Node.js 18+
 - npm ou yarn
 - Compte Appwrite Cloud
-- Clé API Claude (Anthropic)
+- Clé API OpenAI (GPT-4 et Whisper)
 - Numéro WhatsApp Business
 
 ### Configuration
@@ -110,7 +111,8 @@ npm run build
 ## 🔧 Technologies
 
 - **Backend**: Node.js, TypeScript
-- **AI**: Claude 3.5 Sonnet (Anthropic)
+- **AI**: GPT-4o-mini (OpenAI) via LangChain
+- **Voice**: Whisper API (OpenAI)
 - **Database**: Appwrite Cloud
 - **WhatsApp**: whatsapp-web.js
 - **Logging**: Winston
