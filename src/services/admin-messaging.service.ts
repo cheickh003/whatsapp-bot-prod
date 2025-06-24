@@ -176,6 +176,7 @@ export class AdminMessagingService {
       );
       
       const userPhones = conversations.documents.map((doc: any) => doc.phoneNumber);
+      logger.info(`Found ${userPhones.length} users for broadcast:`, userPhones);
       return await this.sendBroadcast(adminPhone, userPhones, message, options);
     } catch (error) {
       logger.error('Error getting all users:', error);
@@ -333,17 +334,22 @@ export class AdminMessagingService {
   }
 
   private formatPhoneNumber(phone: string): string {
-    // Remove @ symbol if present
-    phone = phone.replace('@', '');
+    // Remove @c.us suffix if present to clean the input
+    phone = phone.replace('@c.us', '');
     
-    // If it's just a username, return error
-    if (!phone.includes('+') && !/^\d+$/.test(phone)) {
-      logger.error(`Invalid phone format: ${phone}`);
-      throw new Error('Phone number must be in format: +225XXXXXXXXXX or 225XXXXXXXXXX');
+    // Remove @ symbol at the beginning if present
+    if (phone.startsWith('@')) {
+      phone = phone.substring(1);
     }
     
     // Remove all non-digit characters except +
     phone = phone.replace(/[^\d+]/g, '');
+    
+    // If it's empty or not a valid phone number, return error
+    if (!phone || (!phone.includes('+') && !/^\d+$/.test(phone))) {
+      logger.error(`Invalid phone format: ${phone}`);
+      throw new Error('Phone number must be in format: +225XXXXXXXXXX or 225XXXXXXXXXX');
+    }
     
     // Add country code if missing
     if (!phone.startsWith('+') && !phone.startsWith('225')) {
@@ -353,10 +359,8 @@ export class AdminMessagingService {
     // Remove + if present
     phone = phone.replace('+', '');
     
-    // Add @c.us if not present
-    if (!phone.endsWith('@c.us')) {
-      phone = `${phone}@c.us`;
-    }
+    // Add @c.us suffix
+    phone = `${phone}@c.us`;
     
     return phone;
   }

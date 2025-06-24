@@ -179,3 +179,46 @@ export function addBusinessDays(date: Date, days: number): Date {
   
   return result;
 }
+
+/**
+ * Create a date with specific time in Abidjan timezone
+ * @param hour Hour in Abidjan time (0-23)
+ * @param minute Minute (0-59)
+ * @param addDays Number of days to add (0 for today, 1 for tomorrow, etc.)
+ */
+export function createAbidjanDateTime(hour: number, minute: number, addDays: number = 0): Date {
+  // Get current UTC time
+  const now = new Date();
+  
+  // Create a new date for today at midnight UTC
+  const targetDate = new Date(now);
+  targetDate.setUTCHours(0, 0, 0, 0);
+  
+  // Set the target time (in UTC, which is same as Abidjan GMT+0)
+  targetDate.setUTCHours(hour, minute, 0, 0);
+  
+  // Add days if needed
+  if (addDays > 0) {
+    targetDate.setUTCDate(targetDate.getUTCDate() + addDays);
+  }
+  
+  return targetDate;
+}
+
+/**
+ * Get current hour and minute in Abidjan timezone
+ */
+export function getCurrentAbidjanTime(): { hour: number; minute: number } {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { 
+    timeZone: 'Africa/Abidjan',
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+  const parts = timeStr.split(':');
+  const hour = parseInt(parts[0] || '0');
+  const minute = parseInt(parts[1] || '0');
+  return { hour, minute };
+}

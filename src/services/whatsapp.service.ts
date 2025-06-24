@@ -53,9 +53,22 @@ export class WhatsAppService extends EventEmitter {
       this.emit('qr', qr);
     });
 
-    this.client.on('ready', () => {
+    this.client.on('ready', async () => {
       logger.info('WhatsApp client is ready!');
       this.ready = true;
+      
+      // Wait a bit for client info to be available
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Log client info for debugging
+      if (this.client.info) {
+        logger.info(`Client info available - WID: ${this.client.info.wid?._serialized}`);
+        logger.info(`Client info - Pushname: ${this.client.info.pushname}`);
+        logger.info(`Client info - Platform: ${this.client.info.platform}`);
+      } else {
+        logger.warn('Client info not available after ready event');
+      }
+      
       this.emit('ready');
     });
 
@@ -75,13 +88,33 @@ export class WhatsAppService extends EventEmitter {
       this.emit('disconnected', reason);
     });
 
+    // Listen to ALL messages including own messages for debugging
+    this.client.on('message_create', async (message) => {
+      logger.info(`\n=== MESSAGE_CREATE EVENT ===`);
+      logger.info(`From: ${message.from}`);
+      logger.info(`FromMe: ${message.fromMe}`);
+      logger.info(`Is Group: ${message.from.includes('@g.us')}`);
+      logger.info(`Body preview: ${message.body.substring(0, 50)}...`);
+    });
+
     this.client.on('message', async (message) => {
       try {
-        if (!message.from.endsWith('@c.us')) {
+        // Log ALL messages for debugging
+        logger.info(`\n=== RAW MESSAGE RECEIVED ===`);
+        logger.info(`From: ${message.from}`);
+        logger.info(`To: ${message.to}`);
+        logger.info(`Body: ${message.body}`);
+        logger.info(`Type: ${message.type}`);
+        logger.info(`Is Group: ${message.from.includes('@g.us')}`);
+        logger.info(`Author: ${message.author || 'N/A'}`);
+        
+        // Allow both individual chats (@c.us) and group chats (@g.us)
+        if (!message.from.endsWith('@c.us') && !message.from.endsWith('@g.us')) {
+          logger.warn(`Ignoring message from unknown source: ${message.from}`);
           return;
         }
 
-        logger.info(`Message received from ${message.from}: ${message.body}`);
+        logger.info(`Message passed filter, emitting to handler`);
         this.emit('message', message);
       } catch (error) {
         logger.error('Error handling message:', error);

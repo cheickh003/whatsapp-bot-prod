@@ -43,6 +43,11 @@ async function startBot(): Promise<void> {
       await scheduledAdminMessageService.initialize();
       logger.info('Scheduled admin message service initialized');
       
+      logger.info('Initializing scheduled message service...');
+      const { scheduledMessageService } = await import('./services/scheduled-message.service');
+      await scheduledMessageService.initialize();
+      logger.info('Scheduled message service initialized');
+      
       logger.info('Initializing document service...');
       await documentService.initialize();
       logger.info('Document service initialized');
@@ -65,6 +70,11 @@ async function startBot(): Promise<void> {
       await dailyReportService.initialize();
       logger.info('Daily report service initialized');
       
+      logger.info('Initializing user notes service...');
+      const { userNotesV2Service } = await import('./services/user-notes-v2.service');
+      await userNotesV2Service.initialize();
+      logger.info('User notes service initialized');
+      
       logger.info('All Jarvis services initialized successfully!');
       
       whatsappService.on('message', async (message) => {
@@ -74,6 +84,15 @@ async function startBot(): Promise<void> {
       whatsappService.on('ready', () => {
         logger.info('Bot is ready to receive messages!');
         logger.info('Send /help to see available commands');
+        
+        // Initialize bot ID in message handler
+        const clientInfo = whatsappService.getClient().info;
+        if (clientInfo?.wid) {
+          messageHandler.setBotId(clientInfo.wid._serialized);
+          logger.info(`Bot ID set in message handler: ${clientInfo.wid._serialized}`);
+        } else {
+          logger.warn('Client info not available on ready event');
+        }
         
         // Reminder checker is started automatically during initialization
       });
@@ -132,9 +151,12 @@ async function gracefulShutdown(signal: string) {
     // Stop reminder checker
     reminderService.stopReminderChecker();
     
-    // Stop scheduled message checker
+    // Stop scheduled message checkers
     const { scheduledAdminMessageService } = await import('./services/scheduled-admin-message.service');
     scheduledAdminMessageService.stopScheduler();
+    
+    const { scheduledMessageService } = await import('./services/scheduled-message.service');
+    scheduledMessageService.stopScheduler();
     
     await whatsappService.disconnect();
     clearTimeout(shutdownTimeout);

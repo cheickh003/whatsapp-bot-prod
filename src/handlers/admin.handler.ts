@@ -8,6 +8,8 @@ import { adminSecurityService } from '../services/admin-security.service';
 import { adminMessagingService } from '../services/admin-messaging.service';
 import { logger } from '../utils/logger';
 import { dailyReportService } from '../services/daily-report.service';
+import { scheduledMessageService } from '../services/scheduled-message.service';
+import { createAbidjanDateTime, getCurrentAbidjanTime } from '../utils/date.utils';
 
 export class AdminHandler {
   async handleAdminCommand(phoneNumber: string, command: string): Promise<string> {
@@ -184,7 +186,7 @@ export class AdminHandler {
           return await this.handleSendMessage(phoneNumber, parts, false, false);
         
         case 'send-ai':
-          return await this.handleSendMessage(phoneNumber, parts, true, false);
+          return await this.handleSendAIMessage(phoneNumber, parts);
           
         case 'send-raw':
           return await this.handleSendMessage(phoneNumber, parts, false, true);
@@ -257,13 +259,16 @@ export class AdminHandler {
 /admin test [feature] - Tester feature
 
 *💬 Messagerie Admin:*
-/admin send [phone] [message] - Message normal
-/admin send-ai [phone] [message] - Message IA
-/admin send-raw [phone] [message] - Sans badge
-/admin schedule [time] [phone] [msg] - Différé
-/admin broadcast all [message] - À tous
+/admin send [phone] [message] - Message avec badge admin
+/admin send-ai [phone] [HH:MM] [msg] - Programmé + IA, sans badge
+/admin send-raw [phone] [message] - Sans badge, sans IA
+/admin schedule [time] [phone] [msg] - Programmé avec badge
+/admin broadcast all [message] - Diffusion à tous
 /admin scheduled list - Messages programmés
 /admin scheduled cancel [id] - Annuler
+
+📌 Ex: /admin send-ai 2250703079410 12:07 Dis bonjour
+→ L'IA reformulera en message naturel à 12:07
 
 📱 Format numéro: +2250XXXXXXXXX ou 2250XXXXXXXXX
 
@@ -455,6 +460,88 @@ export class AdminHandler {
     }
 
     return null;
+  }
+
+  private async handleSendAIMessage(
+    adminPhone: string,
+    parts: string[]
+  ): Promise<string> {
+    // Format: /admin send-ai [phone] [time] [message...]
+    // Example: /admin send-ai 2250703079410 12:07 bonjour ca va
+    
+    if (parts.length < 5) {
+      return '❌ Usage: /admin send-ai [phone] [HH:MM] [message]\n' +
+             'Ex: /admin send-ai 2250703079410 12:07 bonjour ca va';
+    }
+
+    const targetPhone = parts[2]!;
+    const timeStr = parts[3]!;
+    const message = parts.slice(4).join(' ');
+
+    // Validate time format HH:MM
+    const timeMatch = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+    if (!timeMatch) {
+      return '❌ Format d\'heure invalide. Utilisez HH:MM (ex: 12:07)';
+    }
+
+    const hour = parseInt(timeMatch[1]!);
+    const minute = parseInt(timeMatch[2]!);
+    
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+      return '❌ Heure invalide. Utilisez un format 24h valide';
+    }
+
+    // Get current time in Abidjan
+    const currentAbidjan = getCurrentAbidjanTime();
+    const currentMinutes = currentAbidjan.hour * 60 + currentAbidjan.minute;
+    const targetMinutes = hour * 60 + minute;
+    
+    // Determine if we should schedule for today or tomorrow
+    let daysToAdd = 0;
+    if (targetMinutes <= currentMinutes) {
+      // Time has passed today, schedule for tomorrow
+      daysToAdd = 1;
+    }
+    
+    // Create the scheduled time in Abidjan timezone
+    const scheduledTime = createAbidjanDateTime(hour, minute, daysToAdd);
+
+    try {
+      // Format phone number properly
+      let formattedPhone = targetPhone;
+      if (!formattedPhone.endsWith('@c.us')) {
+        formattedPhone = `${formattedPhone}@c.us`;
+      }
+
+      // Use admin messaging service with AI processing and scheduling
+      const result = await adminMessagingService.sendMessage(
+        adminPhone,
+        formattedPhone,
+        message,
+        {
+          showAdminBadge: false,  // Pas de badge admin
+          processWithAI: true,    // Traiter avec l'IA
+          isSystemMessage: false,
+          scheduledFor: scheduledTime
+        }
+      );
+
+      if (result) {
+        const dateStr = scheduledMessageService.formatScheduledTime(scheduledTime);
+        return `✅ Message programmé avec succès!\n\n` +
+               `📅 Date d'envoi: ${dateStr}\n` +
+               `📱 Destinataire: ${targetPhone}\n` +
+               `💬 Message original: ${message}\n` +
+               `🤖 Traitement: IA activée\n` +
+               `🆔 ID: ${result.id}\n\n` +
+               `_Le message sera traité par l'IA et envoyé sans badge admin_`;
+      } else {
+        return `❌ Erreur lors de la programmation du message`;
+      }
+    } catch (error: any) {
+      logger.error('Erreur lors de la programmation du message AI:', error);
+      return `❌ Erreur: ${error.message || 'Erreur inconnue'}`;
+    }
   }
 }
 

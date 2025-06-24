@@ -55,7 +55,7 @@ export class ScheduledAdminMessageService {
       // Send each due message
       for (const doc of dueMessages) {
         try {
-          // Send the message
+          // Send the message (without scheduledFor since it's time to send now)
           const result = await adminMessagingService.sendMessage(
             doc.fromAdmin,
             doc.toUser,
@@ -64,6 +64,7 @@ export class ScheduledAdminMessageService {
               showAdminBadge: doc.showAdminBadge,
               processWithAI: doc.processWithAI,
               isSystemMessage: doc.isSystemMessage
+              // Don't include scheduledFor - we want to send now
             }
           );
 

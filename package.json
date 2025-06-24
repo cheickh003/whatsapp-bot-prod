@@ -9,7 +9,13 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "lint": "eslint src/**/*.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:admin": "jest tests/admin --coverage",
+    "test:integration": "jest tests/integration --runInBand",
+    "test:ci": "jest --ci --coverage --maxWorkers=2"
   },
   "keywords": [
     "whatsapp",
@@ -35,11 +41,14 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.11.17",
     "@types/qrcode-terminal": "^0.12.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"

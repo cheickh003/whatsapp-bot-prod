@@ -22,6 +22,7 @@ export interface WhatsAppMessage {
   transcription?: string;
   transcriptionStatus?: 'pending' | 'completed' | 'failed';
   mediaUrl?: string;
+  author?: string; // Author ID in group messages
 }
 
 export const parseWhatsAppMessage = (message: WAMessage): WhatsAppMessage => {
@@ -49,7 +50,7 @@ export const parseWhatsAppMessage = (message: WAMessage): WhatsAppMessage => {
     }
   }
 
-  return {
+  const result: WhatsAppMessage = {
     id: message.id._serialized,
     from: message.from,
     to: message.to,
@@ -59,4 +60,10 @@ export const parseWhatsAppMessage = (message: WAMessage): WhatsAppMessage => {
     type: messageType,
     hasMedia: message.hasMedia,
   };
+  
+  if (message.author) {
+    result.author = message.author;
+  }
+  
+  return result;
 };

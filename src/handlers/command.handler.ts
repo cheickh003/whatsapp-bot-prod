@@ -244,6 +244,15 @@ const commands: CommandHandler[] = [
     },
   },
   {
+    command: 'schedule',
+    description: 'Programmer un message / Schedule a message',
+    execute: async (message: string, context: ChatContext): Promise<string> => {
+      const { scheduleCommand } = await import('../commands/schedule.command');
+      const args = message.split(' ').slice(1);
+      return await scheduleCommand.handle(args, context) || '❌ Erreur de commande';
+    },
+  },
+  {
     command: 'doc',
     description: 'Gérer vos documents / Manage your documents',
     execute: async (message: string, context: ChatContext): Promise<string> => {

@@ -212,6 +212,7 @@ class AppwriteService {
           phoneNumber,
           createdAt: now,
           lastMessageAt: now,
+          messageCount: 0,
         }
       );
 
